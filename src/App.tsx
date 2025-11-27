@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { ShieldCheck, MapPin, ArrowRight, Star, CheckCircle, Loader2 } from 'lucide-react';
+import { ShieldCheck, MapPin, ArrowRight, Star, CheckCircle, Loader2, CreditCard } from 'lucide-react';
 import { supabase } from './lib/supabase';
+import { checkout } from './lib/stripe';
 
 function App() {
   const [email, setEmail] = useState('');
@@ -33,6 +34,15 @@ function App() {
       console.error('Error joining waitlist:', error);
       setStatus('error');
       setErrorMessage(error.message || 'Something went wrong. Please try again.');
+    }
+  };
+
+  const handlePurchase = async () => {
+    try {
+      // Replace with your actual Stripe Price ID
+      await checkout('price_1234567890'); 
+    } catch (error) {
+      alert('Payment failed to initialize.');
     }
   };
 
@@ -115,6 +125,40 @@ function App() {
                 <p className="text-slate-400">{feature.desc}</p>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Pricing / Verification Section */}
+      <section className="py-20 border-t border-white/5">
+        <div className="container mx-auto px-4 text-center">
+          <h2 className="text-3xl font-bold mb-4">Get Verified</h2>
+          <p className="text-slate-400 mb-10 max-w-2xl mx-auto">
+            Become a trusted node in the network. Verification includes a physical site audit and cryptographic identity issuance.
+          </p>
+          
+          <div className="max-w-md mx-auto bg-slate-900 border border-blue-500/30 rounded-2xl p-8 relative overflow-hidden group hover:border-blue-500 transition-colors">
+            <div className="absolute top-0 right-0 bg-blue-600 text-xs font-bold px-3 py-1 rounded-bl-lg">
+              EARLY BIRD
+            </div>
+            <div className="mb-6 flex justify-center">
+              <div className="p-4 bg-blue-500/10 rounded-full text-blue-400">
+                <CreditCard className="w-8 h-8" />
+              </div>
+            </div>
+            <h3 className="text-2xl font-bold mb-2">Founding Member</h3>
+            <div className="text-4xl font-bold mb-6">$99<span className="text-lg text-slate-500 font-normal">/year</span></div>
+            <ul className="text-left space-y-3 mb-8 text-slate-300">
+              <li className="flex items-center gap-2"><CheckCircle className="w-4 h-4 text-emerald-400" /> Verified Badge</li>
+              <li className="flex items-center gap-2"><CheckCircle className="w-4 h-4 text-emerald-400" /> Priority Listing</li>
+              <li className="flex items-center gap-2"><CheckCircle className="w-4 h-4 text-emerald-400" /> Zero Transaction Fees</li>
+            </ul>
+            <button 
+              onClick={handlePurchase}
+              className="w-full py-3 bg-white text-slate-950 hover:bg-blue-50 rounded-lg font-bold transition-colors"
+            >
+              Purchase Verification
+            </button>
           </div>
         </div>
       </section>
