@@ -12,7 +12,7 @@ export const checkout = async (priceId: string) => {
   const stripe = await stripePromise;
   if (!stripe) return;
 
-  const { error } = await stripe.redirectToCheckout({
+  const { error } = await (stripe as any).redirectToCheckout({
     lineItems: [{ price: priceId, quantity: 1 }],
     mode: 'payment',
     successUrl: window.location.origin + '/success',

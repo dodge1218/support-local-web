@@ -1,12 +1,14 @@
 import { useState } from 'react';
-import { ShieldCheck, MapPin, ArrowRight, Star, CheckCircle, Loader2, CreditCard } from 'lucide-react';
+import { ShieldCheck, MapPin, ArrowRight, Star, CheckCircle, Loader2, CreditCard, Code } from 'lucide-react';
 import { supabase } from './lib/supabase';
 import { checkout } from './lib/stripe';
+import { WebsiteRequestForm } from './components/WebsiteRequestForm';
 
 function App() {
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
+  const [showWebsiteForm, setShowWebsiteForm] = useState(false);
 
   const scrollToSection = (id: string) => {
     const element = document.getElementById(id);
@@ -125,6 +127,48 @@ function App() {
                 <p className="text-slate-400">{feature.desc}</p>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Website Build Service Section */}
+      <section className="py-20 border-t border-white/5 bg-gradient-to-b from-slate-950 to-blue-900/10">
+        <div className="container mx-auto px-4">
+          <div className="flex flex-col md:flex-row items-center gap-12">
+            <div className="flex-1">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-mono mb-6">
+                <Code className="w-3 h-3" />
+                NEW_SERVICE
+              </div>
+              <h2 className="text-4xl font-bold mb-6">Need a Modern Website?</h2>
+              <p className="text-slate-400 text-lg mb-8 leading-relaxed">
+                Don't have a digital storefront? Our "Vibe Coding" team builds high-performance, SEO-optimized websites for local businesses. 
+                Get a custom quote today and start accepting orders online.
+              </p>
+              <button 
+                onClick={() => setShowWebsiteForm(!showWebsiteForm)}
+                className="px-8 py-4 bg-white text-slate-950 hover:bg-blue-50 rounded-xl font-bold transition-all flex items-center gap-2"
+              >
+                {showWebsiteForm ? 'Close Request Form' : 'Get a Website Quote'} <ArrowRight className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="flex-1 w-full">
+              {showWebsiteForm ? (
+                <div className="animate-in fade-in slide-in-from-bottom-4">
+                  <WebsiteRequestForm onClose={() => setShowWebsiteForm(false)} />
+                </div>
+              ) : (
+                <div className="relative group cursor-pointer" onClick={() => setShowWebsiteForm(true)}>
+                  <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl blur opacity-25 group-hover:opacity-75 transition duration-1000 group-hover:duration-200"></div>
+                  <div className="relative bg-slate-900 border border-white/10 rounded-2xl p-8 aspect-video flex items-center justify-center">
+                    <div className="text-center">
+                      <Code className="w-16 h-16 text-slate-700 mx-auto mb-4 group-hover:text-blue-500 transition-colors" />
+                      <p className="text-slate-500 font-mono text-sm">Click to Initialize Build Request</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </section>
