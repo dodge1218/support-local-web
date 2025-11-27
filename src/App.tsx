@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { ShieldCheck, MapPin, ArrowRight, Star, CheckCircle, Loader2 } from 'lucide-react';
+import { supabase } from './lib/supabase';
 
 function App() {
   const [email, setEmail] = useState('');
-  const [status, setStatus] = useState<'idle' | 'loading' | 'success'>('idle');
+  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [errorMessage, setErrorMessage] = useState('');
 
   const scrollToSection = (id: string) => {
     const element = document.getElementById(id);
@@ -12,15 +14,26 @@ function App() {
     }
   };
 
-  const handleJoin = (e: React.FormEvent) => {
+  const handleJoin = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) return;
     setStatus('loading');
-    // Simulate API call
-    setTimeout(() => {
+    setErrorMessage('');
+
+    try {
+      const { error } = await supabase
+        .from('waitlist')
+        .insert([{ email, project: 'support-local', created_at: new Date().toISOString() }]);
+
+      if (error) throw error;
+
       setStatus('success');
       setEmail('');
-    }, 1500);
+    } catch (error: any) {
+      console.error('Error joining waitlist:', error);
+      setStatus('error');
+      setErrorMessage(error.message || 'Something went wrong. Please try again.');
+    }
   };
 
   return (
@@ -127,7 +140,7 @@ function App() {
               />
               <button 
                 type="submit"
-                disabled={status !== 'idle'}
+                disabled={status === 'loading' || status === 'success'}
                 className="w-full py-3 bg-blue-600 hover:bg-blue-500 disabled:bg-slate-800 disabled:cursor-not-allowed text-white rounded-lg font-bold transition-colors flex items-center justify-center gap-2"
               >
                 {status === 'loading' ? (
@@ -146,6 +159,11 @@ function App() {
             {status === 'success' && (
               <p className="mt-4 text-emerald-400 text-sm">
                 Thanks! We'll be in touch shortly.
+              </p>
+            )}
+            {status === 'error' && (
+              <p className="mt-4 text-red-400 text-sm">
+                {errorMessage}
               </p>
             )}
           </div>
