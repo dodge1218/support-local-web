@@ -1,6 +1,28 @@
-import { ShieldCheck, MapPin, ArrowRight, Star } from 'lucide-react';
+import { useState } from 'react';
+import { ShieldCheck, MapPin, ArrowRight, Star, CheckCircle, Loader2 } from 'lucide-react';
 
 function App() {
+  const [email, setEmail] = useState('');
+  const [status, setStatus] = useState<'idle' | 'loading' | 'success'>('idle');
+
+  const scrollToSection = (id: string) => {
+    const element = document.getElementById(id);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
+  const handleJoin = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email) return;
+    setStatus('loading');
+    // Simulate API call
+    setTimeout(() => {
+      setStatus('success');
+      setEmail('');
+    }, 1500);
+  };
+
   return (
     <div className="min-h-screen bg-slate-950 text-white font-sans selection:bg-blue-500 selection:text-white">
       {/* Header */}
@@ -10,7 +32,10 @@ function App() {
             <ShieldCheck className="w-6 h-6 text-blue-500" />
             <span>SUPPORT<span className="text-blue-500">LOCAL</span></span>
           </div>
-          <button className="px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-sm font-medium transition-colors">
+          <button 
+            onClick={() => scrollToSection('waitlist')}
+            className="px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-sm font-medium transition-colors"
+          >
             For Business
           </button>
         </div>
@@ -34,10 +59,16 @@ function App() {
           </p>
           
           <div className="flex flex-col sm:flex-row justify-center gap-4">
-            <button className="px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold transition-all hover:scale-105 flex items-center justify-center gap-2">
+            <button 
+              onClick={() => scrollToSection('waitlist')}
+              className="px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold transition-all hover:scale-105 flex items-center justify-center gap-2"
+            >
               Join the Waitlist <ArrowRight className="w-5 h-5" />
             </button>
-            <button className="px-8 py-4 bg-slate-800 hover:bg-slate-700 text-white border border-slate-700 rounded-xl font-bold transition-all">
+            <button 
+              onClick={() => scrollToSection('features')}
+              className="px-8 py-4 bg-slate-800 hover:bg-slate-700 text-white border border-slate-700 rounded-xl font-bold transition-all"
+            >
               Explore Directory
             </button>
           </div>
@@ -45,7 +76,7 @@ function App() {
       </section>
 
       {/* Features Grid */}
-      <section className="py-20 border-t border-white/5 bg-slate-900/20">
+      <section id="features" className="py-20 border-t border-white/5 bg-slate-900/20">
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-3 gap-8">
             {[
@@ -71,6 +102,52 @@ function App() {
                 <p className="text-slate-400">{feature.desc}</p>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Waitlist Section */}
+      <section id="waitlist" className="py-24 relative overflow-hidden">
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="max-w-xl mx-auto bg-slate-900 border border-white/10 rounded-2xl p-8 md:p-12 text-center">
+            <h2 className="text-3xl font-bold mb-4">Secure Your Spot</h2>
+            <p className="text-slate-400 mb-8">
+              We are currently onboarding businesses in select cities. Join the waitlist to be notified when we launch in your area.
+            </p>
+
+            <form onSubmit={handleJoin} className="flex flex-col gap-4">
+              <input 
+                type="email" 
+                placeholder="business@email.com" 
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                disabled={status !== 'idle'}
+                className="w-full bg-slate-950 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-blue-500 transition-colors"
+                required
+              />
+              <button 
+                type="submit"
+                disabled={status !== 'idle'}
+                className="w-full py-3 bg-blue-600 hover:bg-blue-500 disabled:bg-slate-800 disabled:cursor-not-allowed text-white rounded-lg font-bold transition-colors flex items-center justify-center gap-2"
+              >
+                {status === 'loading' ? (
+                  <>
+                    <Loader2 className="w-5 h-5 animate-spin" /> Processing...
+                  </>
+                ) : status === 'success' ? (
+                  <>
+                    <CheckCircle className="w-5 h-5" /> Added to Waitlist
+                  </>
+                ) : (
+                  'Join Alpha Waitlist'
+                )}
+              </button>
+            </form>
+            {status === 'success' && (
+              <p className="mt-4 text-emerald-400 text-sm">
+                Thanks! We'll be in touch shortly.
+              </p>
+            )}
           </div>
         </div>
       </section>
